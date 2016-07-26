@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VK_Parser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="VK Parser" Height="500" Width="900">
+    <Grid Margin="10">
+        <GroupBox x:Name="groupLogin" Header="Log in" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top">
+            <StackPanel VerticalAlignment="Top" Margin="5">
+                <Label >AppID:</Label>
+                <TextBox Name="textAppID" Margin="0,0,0,5"></TextBox>
+                <Label>Login:</Label>
+                <TextBox Name="textLogin" Margin="0,0,0,5"></TextBox>
+                <Label>Password:</Label>
+                <PasswordBox Name="textPassword" Margin="0,0,0,5"></PasswordBox>
+                <CheckBox Name="checkRemember" Margin="0,0,0,5" >Remeber password</CheckBox>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button Name="btnLogin" Height="20" Width="50" Margin="0,0,20,0">Login</Button>
+                    <Button Name="btnLogout" Height="20" Width="50">Logout</Button>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </Window>
