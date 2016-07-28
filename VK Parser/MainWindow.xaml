@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VK_Parser"
         mc:Ignorable="d"
-        Title="VK Parser" Height="500" Width="900">
+        Title="VK Parser" Height="500" Width="900" Loaded="Window_Loaded">
     <Grid Margin="10">
-        <GroupBox x:Name="groupLogin" Header="Log in" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" x:Name="groupLogin" Header="Log in" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top">
             <StackPanel VerticalAlignment="Top" Margin="5">
                 <Label Name="lbLoginError" Foreground="Red" Visibility="Collapsed"></Label>
                 <Label>Login:</Label>
@@ -22,6 +26,29 @@
                     <Button Name="btnLogout" Height="20" Width="50" Click="btnLogout_Click">Logout</Button>
                 </StackPanel>
             </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Column="1" x:Name="groupOptions" Header="Options" HorizontalAlignment="Left" Width="auto" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="5" Grid.Column="0">
+                    <Label>Birthday:</Label>
+                    <Label>from:</Label>
+                    <DatePicker Name="DateStart" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
+                    <Label>to:</Label>
+                    <DatePicker Name="DateEnd" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
+                    <Label Margin="0,5,0,0">Sex:</Label>
+                    <ComboBox Name="cbSex" Width="120"></ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="5">
+                    <Label>Country:</Label>
+                    <ComboBox Name="cbCountry" Width="120" DropDownClosed="OnCountryChanged"></ComboBox>
+                    <Label>City:</Label>
+                    <ComboBox Name="cbCity" Width="120"></ComboBox>
+                </StackPanel>
+            </Grid>
         </GroupBox>
     </Grid>
 </Window>

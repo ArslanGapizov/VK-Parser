@@ -18,7 +18,7 @@ namespace VK_Parser
         {
             get
             {
-                if(_client == null)
+                if (_client == null)
                 {
                     _client = new HttpClient();
                 }
@@ -26,35 +26,80 @@ namespace VK_Parser
             }
         }
 
-        public static string ApiDomain { get { return "vk.com"; } }
+        public static string Lang { get; set; } = "0";
+        public static string ApiDomain { get { return "api.vk.com"; } }
         public static string ClientId { get { return "2274003"; } }
         public static string ClientSecret { get { return "hHbZxrka2uZ6jB1inYsH"; } }
         public static string Version { get { return "5.53"; } }
-        public static string Token { get; set; }
-        
+        public static string AccessToken { get; set; }
 
-
-
-        public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
+        public static async Task<string> RunAsync(string method, Dictionary<string, string> pars)
         {
-            string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1",ClientId, ClientSecret, login, password, Version);
-            if (captcha_key != null)
-                requestUri += string.Format("&captcha_sid={0}&captcha_key={1}", new object[2] { (object)captcha_sid, (object)captcha_key });
+            IEnumerable<KeyValuePair<string, string>> source = pars.Where((f => f.Value != null));
+            pars = source.ToDictionary(x => x.Key, x => x.Value);
+            pars.Add("access_token", AccessToken);
+            pars.Add("lang", Lang);
+            pars.Add("v", Version);
+            string format = "/method/{0}?{1}";
+            string[] paramArray = new string[2]
+            {
+                method,
+                pars.Keys.Aggregate("",(current, s) => current + string.Format("{0}={1}", new object[2] { s, pars[s] }) + "&" )
+            };
 
-            return await (await GetAsync(requestUri)).Content.ReadAsStringAsync();
+            string result = string.Format("https://" + ApiDomain + format, paramArray);
+            Debug.WriteLine(result);
+            return await (await GetAsync(result)).Content.ReadAsStringAsync();
         }
 
-        public static async Task<HttpResponseMessage> GetAsync(string requestUri)
+
+    public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
+    {
+        string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1", ClientId, ClientSecret, login, password, Version);
+        if (captcha_key != null)
+            requestUri += string.Format("&captcha_sid={0}&captcha_key={1}", new object[2] { (object)captcha_sid, (object)captcha_key });
+
+        return await (await GetAsync(requestUri)).Content.ReadAsStringAsync();
+    }
+
+    public static async Task<HttpResponseMessage> GetAsync(string requestUri)
+    {
+        try
         {
-            try
-            {
-                return await Client.GetAsync(requestUri);
-            }
-            catch(Exception ex)
-            {
-                    Debug.WriteLine(ex.Message);
-                    return null;
-            }
+            return await Client.GetAsync(requestUri);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
         }
     }
+
+    public static class database
+    {
+        public static async Task<string> getCountries(string need_all, string code, string offset, string count)
+        {
+            return await RunAsync("database.getCountries", new Dictionary<string, string>
+                {
+                    { "need_all", need_all },
+                    { "code", code },
+                    { "offset", offset },
+                    { "count", count }
+                });
+        }
+
+        public static async Task<string> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
+        {
+            return await RunAsync("database.getCities", new Dictionary<string, string>
+                {
+                    { "country_id", country_id },
+                    { "region_id", region_id },
+                    { "q", q },
+                    { "need_all", need_all },
+                    { "offset", offset },
+                    { "count", count }
+                });
+        }
+    }
+}
 }

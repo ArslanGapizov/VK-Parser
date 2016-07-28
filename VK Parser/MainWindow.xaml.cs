@@ -27,8 +27,8 @@ namespace VK_Parser
 
         public MainWindow()
         {
-
             InitializeComponent();
+
         }
 
         private async void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -47,7 +47,8 @@ namespace VK_Parser
             JToken token;
             if (AuthResponse.TryGetValue("access_token", out token))
             {
-                API.Token = AuthResponse["access_token"].ToString();
+                API.AccessToken = AuthResponse["access_token"].ToString();
+                LoginSucceded();
                 return;
             }
             if (AuthResponse.TryGetValue("error", out token) && AuthResponse["error"].ToString() == "need_captcha")
@@ -83,7 +84,7 @@ namespace VK_Parser
 
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
-            API.Token = "";
+            API.AccessToken = "";
             //TODO: Kill threads
             LogoutInterfaceChanges();
         }
@@ -103,6 +104,71 @@ namespace VK_Parser
             checkRemember.IsEnabled = true;
             btnLogin.IsEnabled = true;
             btnLogout.IsEnabled = false;
+        }
+
+        private async void LoginSucceded()
+        {
+        }
+
+        private async void LoadCountries()
+        {
+            dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
+
+            Dictionary<string, string> countries = new Dictionary<string, string>();
+            foreach (dynamic item in countriesResponse.response.items)
+            {
+                countries.Add(item.id.ToString(), item.title.ToString());
+            }
+
+            cbCountry.ItemsSource = countries;
+            cbCountry.DisplayMemberPath = "Value";
+            cbCountry.SelectedValuePath = "Key";
+            cbCountry.SelectedValue = "1";
+        }
+
+        private async void LoadCities()
+        {
+            if(cbCountry.SelectedValue == null)
+            {
+                cbCountry.SelectedValue = "1";
+            }
+            var resp = await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "1", null, "1000");
+
+            Debug.WriteLine(resp);
+
+
+            dynamic citiesReesponse = JObject.Parse(resp);
+
+            Dictionary<string, string> cities = new Dictionary<string, string>();
+            foreach(dynamic item in citiesReesponse.response.items)
+            {
+                cities.Add(item.id.ToString(), item.title.ToString());
+            }
+            cbCity.ItemsSource = cities;
+            cbCity.DisplayMemberPath = "Value";
+            cbCity.SelectedValuePath = "Key";
+            cbCity.SelectedValue = cities.First().Key;
+        }
+
+        private void LoadSex()
+        {
+            Dictionary<string, string> sexDictionary = new Dictionary<string, string> { { "1", "женщина"}, { "2", "мужчина"}, { "0", "любой"} };
+            cbSex.ItemsSource = sexDictionary;
+            cbSex.DisplayMemberPath = "Value";
+            cbSex.SelectedValuePath = "Key";
+            cbSex.SelectedValue = "0";
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadSex();
+            LoadCountries();
+            LoadCities();
+        }
+
+        private void OnCountryChanged(object sender, EventArgs e)
+        {
+            LoadCities();
         }
     }
 }
