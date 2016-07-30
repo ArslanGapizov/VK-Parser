@@ -53,44 +53,55 @@ namespace VK_Parser
         }
 
 
-    public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
-    {
-        string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1", ClientId, ClientSecret, login, password, Version);
-        if (captcha_key != null)
-            requestUri += string.Format("&captcha_sid={0}&captcha_key={1}", new object[2] { (object)captcha_sid, (object)captcha_key });
-
-        return await (await GetAsync(requestUri)).Content.ReadAsStringAsync();
-    }
-
-    public static async Task<HttpResponseMessage> GetAsync(string requestUri)
-    {
-        try
+        public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
         {
-            return await Client.GetAsync(requestUri);
+            string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1", ClientId, ClientSecret, login, password, Version);
+            if (captcha_key != null)
+                requestUri += string.Format("&captcha_sid={0}&captcha_key={1}", new object[2] { (object)captcha_sid, (object)captcha_key });
+
+            return await (await GetAsync(requestUri)).Content.ReadAsStringAsync();
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            return null;
-        }
-    }
 
-    public static class database
-    {
-        public static async Task<string> getCountries(string need_all, string code, string offset, string count)
+        public static async Task<HttpResponseMessage> GetAsync(string requestUri)
         {
-            return await RunAsync("database.getCountries", new Dictionary<string, string>
+            try
+            {
+                return await Client.GetAsync(requestUri);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public static class database
+        {
+            public static async Task<string> getCountries(string need_all, string code, string offset, string count)
+            {
+                return await RunAsync("database.getCountries", new Dictionary<string, string>
                 {
                     { "need_all", need_all },
                     { "code", code },
                     { "offset", offset },
                     { "count", count }
                 });
-        }
+            }
 
-        public static async Task<string> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
-        {
-            return await RunAsync("database.getCities", new Dictionary<string, string>
+            public static async Task<string> getRegions(string country_id, string q, string offset, string count)
+            {
+                return await RunAsync("database.getRegions", new Dictionary<string, string>
+                {
+                    { "country_id", country_id },
+                    { "q", q },
+                    { "offset", offset },
+                    { "count", count }
+                });
+            }
+
+            public static async Task<string> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
+            {
+                return await RunAsync("database.getCities", new Dictionary<string, string>
                 {
                     { "country_id", country_id },
                     { "region_id", region_id },
@@ -99,7 +110,8 @@ namespace VK_Parser
                     { "offset", offset },
                     { "count", count }
                 });
+            }
+
         }
     }
-}
 }

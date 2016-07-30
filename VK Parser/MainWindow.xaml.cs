@@ -62,7 +62,7 @@ namespace VK_Parser
                 bitmap.EndInit();
 
                 imageCaptcha.Source = bitmap;
-                
+
 
                 lbLoginError.Visibility = Visibility.Visible;
                 lbLoginError.Content = AuthResponse["error"].ToString();
@@ -110,8 +110,9 @@ namespace VK_Parser
         {
         }
 
-        private async void LoadCountries()
+        private async Task LoadCountries()
         {
+
             dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
 
             Dictionary<string, string> countries = new Dictionary<string, string>();
@@ -126,49 +127,78 @@ namespace VK_Parser
             cbCountry.SelectedValue = "1";
         }
 
-        private async void LoadCities()
+        private async Task LoadCities()
         {
-            if(cbCountry.SelectedValue == null)
-            {
-                cbCountry.SelectedValue = "1";
-            }
-            var resp = await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "1", null, "1000");
-
-            Debug.WriteLine(resp);
-
-
-            dynamic citiesReesponse = JObject.Parse(resp);
-
+            dynamic citiesResponse;
             Dictionary<string, string> cities = new Dictionary<string, string>();
-            foreach(dynamic item in citiesReesponse.response.items)
+
+            citiesResponse = JObject.Parse(await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "0", null, "1000"));
+
+            foreach (dynamic item in citiesResponse.response.items)
             {
                 cities.Add(item.id.ToString(), item.title.ToString());
             }
+
             cbCity.ItemsSource = cities;
             cbCity.DisplayMemberPath = "Value";
             cbCity.SelectedValuePath = "Key";
-            cbCity.SelectedValue = cities.First().Key;
+            cbCity.SelectedValue = cities.FirstOrDefault().Key;
         }
+
+
 
         private void LoadSex()
         {
-            Dictionary<string, string> sexDictionary = new Dictionary<string, string> { { "1", "женщина"}, { "2", "мужчина"}, { "0", "любой"} };
+            Dictionary<string, string> sexDictionary = new Dictionary<string, string> {
+                                                                                        { "1", "женщина"},
+                                                                                        { "2", "мужчина"},
+                                                                                        { "0", "любой"}
+                                                                                      };
             cbSex.ItemsSource = sexDictionary;
             cbSex.DisplayMemberPath = "Value";
             cbSex.SelectedValuePath = "Key";
             cbSex.SelectedValue = "0";
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadSex();
-            LoadCountries();
-            LoadCities();
+            //LoadSex();
+            await LoadCountries();
+            await LoadCities();
         }
 
-        private void OnCountryChanged(object sender, EventArgs e)
+        private void InterfaceSetup()
         {
-            LoadCities();
+            cbCity.IsTextSearchEnabled = true;
+        }
+
+        private async void OnCountryChanged(object sender, EventArgs e)
+        {
+            cbCity.IsEnabled = false;
+            await LoadCities();
+
+            cbCity.IsEnabled = true;
+        }
+
+        private async void OnRegionChanged(object sender, EventArgs e)
+        {
+            cbCity.IsEnabled = false;
+            await LoadCities();
+            cbCity.IsEnabled = true;
+        }
+    }
+
+    public static class CollectionData
+    {
+        public static Dictionary<string, string> CollectionSex()
+        {
+            Dictionary<string, string> sexDictionary = new Dictionary<string, string> { { "1", "female" }, { "2", "male" }, { "0", "any" } };
+            return sexDictionary;
+        }
+        public static Dictionary<string, string> CollectionRelationshipStatus()
+        {
+            Dictionary<string, string> RelationDictionary = new Dictionary<string, string> { { "1", "Not married" }, { "2", "In relationship" }, { "3", "Engaged" }, { "4", "Married" }, { "5", "It`s complicated" }, { "6", "Actively searching" }, { "7", "In love" } };
+            return RelationDictionary;
         }
     }
 }
