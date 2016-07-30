@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Net;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace VK_Parser
 {
@@ -23,7 +24,20 @@ namespace VK_Parser
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<User> _usersData;
         public string CaptchaSid { get; set; }
+        public List<User> UsersData
+        {
+            get
+            {
+                if (_usersData == null)
+                {
+                    _usersData = new List<User>();
+                }
+                return _usersData;
+            }
+        }
+        
 
         public MainWindow()
         {
@@ -96,6 +110,8 @@ namespace VK_Parser
             checkRemember.IsEnabled = false;
             btnLogin.IsEnabled = false;
             btnLogout.IsEnabled = true;
+
+            groupOptions.IsEnabled = true;
         }
         private void LogoutInterfaceChanges()
         {
@@ -104,6 +120,8 @@ namespace VK_Parser
             checkRemember.IsEnabled = true;
             btnLogin.IsEnabled = true;
             btnLogout.IsEnabled = false;
+
+            groupOptions.IsEnabled = false;
         }
 
         private async void LoginSucceded()
@@ -159,12 +177,12 @@ namespace VK_Parser
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            cbCountry.IsEnabled = false;
-            cbCity.IsEnabled = false;
+
+            LogoutInterfaceChanges();
             await LoadCountries();
             await LoadCities();
-            cbCountry.IsEnabled = true;
-            cbCity.IsEnabled = true;
+            dgUsers.ItemsSource = UsersData;
+            
         }
 
         private void InterfaceSetup()
@@ -173,17 +191,27 @@ namespace VK_Parser
 
         private async void OnCountryChanged(object sender, EventArgs e)
         {
-            cbCity.IsEnabled = false;
             await LoadCities();
-
-            cbCity.IsEnabled = true;
+            
         }
 
         private async void OnRegionChanged(object sender, EventArgs e)
         {
-            cbCity.IsEnabled = false;
             await LoadCities();
-            cbCity.IsEnabled = true;
+        }
+
+        private async void Search_Click(object sender, RoutedEventArgs e)
+        {
+            
+            string fields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation";
+            dynamic responseUsers = JObject.Parse(await API.users.search(cbCountry.SelectedValue.ToString(), cbCity.SelectedValue.ToString(), cbSex.SelectedValue.ToString(),"1000", fields));
+
+            
+            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item => 
+            {
+                UsersData.Add(new User { Id = item.id, FirstName = item.first_name, LastName = item.last_name, Sex = item.sex, /*TODO: bdate,*/ Country = item["country"] != null ? item.country.title : null, City = item["city"] != null ? item.city.title : null, PrivateMessage = item.can_write_private_message, MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null, HomePhone = item["home_phone"] != null ? item.home_phone : null, Relation = item.relation != null ? item.relation : null });
+            });
+            dgUsers.Items.Refresh();
         }
     }
 

@@ -116,11 +116,26 @@ namespace VK_Parser
             {
                 return await RunAsync("database.getUniversities", new Dictionary<string, string>
                 {
-                    { "q", q},
+                    { "q", q },
                     { "country_id", country_id },
                     { "city_id", city_id },
                     { "offset", offset },
                     { "count", count }
+                });
+            }
+        }
+
+        public static class users
+        {
+            public static async Task<string> search(string country, string city, string sex, string count, string fields)
+            {
+                return await RunAsync("users.search", new Dictionary<string, string>
+                {
+                    { "country", country },
+                    { "city", city },
+                    { "sex", sex },
+                    { "count",  count},
+                    { "fields", fields }
                 });
             }
         }

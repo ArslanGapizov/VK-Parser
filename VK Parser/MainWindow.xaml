@@ -35,7 +35,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" x:Name="groupOptions" Header="Options" HorizontalAlignment="Left" Width="auto" VerticalAlignment="Top">
                 <Grid>
@@ -62,7 +62,6 @@
                                 <ComboBox Name="cbCountry" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Width="120" Margin="0,0,0,5" IsTextSearchEnabled="True" DropDownClosed="OnCountryChanged"></ComboBox>
                                 <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">City:</Label>
                                 <ComboBox Name="cbCity" Width="120" IsTextSearchEnabled="True" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Margin="0,0,0,5"></ComboBox>
-
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <RadioButton Name="rbByID" Margin="0,0,0,5" GroupName="selectRegion">By ID:</RadioButton>
@@ -89,10 +88,27 @@
                 </Grid>
             </GroupBox>
             <StackPanel Grid.Row="1" Margin="5">
-                <Button Margin="0,0,0,5">Search</Button>
+                <Button Margin="0,0,0,5" Click="Search_Click">Search</Button>
                 <Button>Stop</Button>
             </StackPanel>
-            <DataGrid Grid.Row="2" Name="dgUsers" ItemsSource="{Binding Path=User}" Height="200"></DataGrid>
+            <ListView FontSize="14" Grid.Row="2" Name="dgUsers"  ItemsSource="{Binding Path=User}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" />
+                        <GridViewColumn Header="FirstName" DisplayMemberBinding="{Binding FirstName}" />
+                        <GridViewColumn Header="LastName" DisplayMemberBinding="{Binding LastName}" />
+                        <GridViewColumn Header="Sex" DisplayMemberBinding="{Binding Sex}" />
+                        <GridViewColumn Header="BDate" DisplayMemberBinding="{Binding BDate}" />
+                        <GridViewColumn Header="Country" DisplayMemberBinding="{Binding Country}" />
+                        <GridViewColumn Header="City" DisplayMemberBinding="{Binding City}"/>
+                        <GridViewColumn Header="PM" DisplayMemberBinding="{Binding PrivateMessage}"/>
+                        <GridViewColumn Header="MobilePhone" DisplayMemberBinding="{Binding MobilePhone}"/>
+                        <GridViewColumn Header="HomePhone" DisplayMemberBinding="{Binding HomePhone}"/>
+                        <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time}"/>
+                        <GridViewColumn Header="Relation" DisplayMemberBinding="{Binding Relation}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
     </Grid>
 </Window>
