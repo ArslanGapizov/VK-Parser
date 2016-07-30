@@ -112,6 +112,17 @@ namespace VK_Parser
                 });
             }
 
+            public static async Task<string> getUniversities(string q, string country_id, string city_id, string offset, string count)
+            {
+                return await RunAsync("database.getUniversities", new Dictionary<string, string>
+                {
+                    { "q", q},
+                    { "country_id", country_id },
+                    { "city_id", city_id },
+                    { "offset", offset },
+                    { "count", count }
+                });
+            }
         }
     }
 }

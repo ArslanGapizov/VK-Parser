@@ -144,9 +144,6 @@ namespace VK_Parser
             cbCity.SelectedValuePath = "Key";
             cbCity.SelectedValue = cities.FirstOrDefault().Key;
         }
-
-
-
         private void LoadSex()
         {
             Dictionary<string, string> sexDictionary = new Dictionary<string, string> {
@@ -162,14 +159,16 @@ namespace VK_Parser
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //LoadSex();
+            cbCountry.IsEnabled = false;
+            cbCity.IsEnabled = false;
             await LoadCountries();
             await LoadCities();
+            cbCountry.IsEnabled = true;
+            cbCity.IsEnabled = true;
         }
 
         private void InterfaceSetup()
         {
-            cbCity.IsTextSearchEnabled = true;
         }
 
         private async void OnCountryChanged(object sender, EventArgs e)
@@ -187,6 +186,8 @@ namespace VK_Parser
             cbCity.IsEnabled = true;
         }
     }
+
+
 
     public static class CollectionData
     {

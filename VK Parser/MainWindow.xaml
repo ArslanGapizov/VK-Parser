@@ -31,64 +31,68 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-        <GroupBox Grid.Column="1" x:Name="groupOptions" Header="Options" HorizontalAlignment="Left" Width="auto" VerticalAlignment="Top">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" x:Name="groupOptions" Header="Options" HorizontalAlignment="Left" Width="auto" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0" Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                        <RowDefinition Height="auto"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Label>Select region:</Label>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                            <RadioButton Name="rbFromList" IsChecked="True" Margin="0,0,0,5" GroupName="selectRegion">from list</RadioButton>
-                            <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">Country:</Label>
-                            <ComboBox Name="cbCountry" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Width="120" Margin="0,0,0,5" IsTextSearchEnabled="True" DropDownClosed="OnCountryChanged"></ComboBox>
-                            <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">City:</Label>
-                            <ComboBox Name="cbCity" Width="120" IsTextSearchEnabled="True" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}"></ComboBox>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <RadioButton Name="rbByID" Margin="0,0,0,5" GroupName="selectRegion">By ID:</RadioButton>
-                            <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">Country ID:</Label>
-                            <TextBox Name="textCountryId" Width="120" Margin="0,0,0,5" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
-                            <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">City ID:</Label>
-                            <TextBox Name="textCityId" Width="120" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                            <Label>Birthday:</Label>
-                            <Label Margin="0,-10,0,0">from:</Label>
-                            <DatePicker Name="DateStart" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
+                    <Grid Grid.Column="0" Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Label>Select region:</Label>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <RadioButton Name="rbFromList" IsChecked="True" Margin="0,0,0,5" GroupName="selectRegion">from list</RadioButton>
+                                <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">Country:</Label>
+                                <ComboBox Name="cbCountry" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Width="120" Margin="0,0,0,5" IsTextSearchEnabled="True" DropDownClosed="OnCountryChanged"></ComboBox>
+                                <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">City:</Label>
+                                <ComboBox Name="cbCity" Width="120" IsTextSearchEnabled="True" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Margin="0,0,0,5"></ComboBox>
+
                             </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <Label Margin="0,15,0,0">to:</Label>
-                            <DatePicker Name="DateEnd" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
-                        </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <RadioButton Name="rbByID" Margin="0,0,0,5" GroupName="selectRegion">By ID:</RadioButton>
+                                <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">Country ID:</Label>
+                                <TextBox Name="textCountryId" Width="120" Margin="0,0,0,5" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
+                                <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">City ID:</Label>
+                                <TextBox Name="textCityId" Width="120" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
+                    <StackPanel Margin="5" Grid.Column="1">
+                        <Label>Birthday:</Label>
+                        <Label>from:</Label>
+                        <DatePicker Name="DateStart" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
+                        <Label>to:</Label>
+                        <DatePicker Name="DateEnd" Width="120" SelectedDate="{Binding Path = SellStartDate, StringFormat = {}{0:dd-MM-yyyy}}"></DatePicker>
+                    </StackPanel>
+                    <StackPanel Margin="5" Grid.Column="2">
+                        <Label Margin="0,5,0,0">Sex:</Label>
+                        <ComboBox Name="cbSex" ItemsSource="{Binding Source={StaticResource Sex}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="0" Width="120"></ComboBox>
+                        <Label>Relationship status:</Label>
+                        <ComboBox Name="cbRelationStatus" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
+                    </StackPanel>
                 </Grid>
-                <StackPanel Margin="5" Grid.Column="1">
-                    <Label Margin="0,5,0,0">Sex:</Label>
-                    <ComboBox Name="cbSex" ItemsSource="{Binding Source={StaticResource Sex}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="0" Width="120"></ComboBox>
-                    <Label>Relationship status:</Label>
-                    <ComboBox Name="cbRelationStatus" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
-                </StackPanel>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
+            <StackPanel Grid.Row="1" Margin="5">
+                <Button Margin="0,0,0,5">Search</Button>
+                <Button>Stop</Button>
+            </StackPanel>
+            <DataGrid Grid.Row="2" Name="dgUsers" ItemsSource="{Binding Path=User}" Height="200"></DataGrid>
+        </Grid>
     </Grid>
 </Window>
