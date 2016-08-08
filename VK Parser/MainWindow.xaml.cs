@@ -24,6 +24,7 @@ namespace VK_Parser
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string _searchFields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation";
         private List<User> _usersData;
         public string CaptchaSid { get; set; }
         public List<User> UsersData
@@ -202,14 +203,27 @@ namespace VK_Parser
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
-            
-            string fields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation";
-            dynamic responseUsers = JObject.Parse(await API.users.search(cbCountry.SelectedValue.ToString(), cbCity.SelectedValue.ToString(), cbSex.SelectedValue.ToString(),"1000", fields));
+            dynamic responseUsers = JObject.Parse(await API.users.search(cbCountry.SelectedValue.ToString(), cbCity.SelectedValue.ToString(), cbSex.SelectedValue.ToString(),"1000", _searchFields));
 
             
             Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item => 
             {
-                UsersData.Add(new User { Id = item.id, FirstName = item.first_name, LastName = item.last_name, Sex = item.sex, /*TODO: bdate,*/ Country = item["country"] != null ? item.country.title : null, City = item["city"] != null ? item.city.title : null, PrivateMessage = item.can_write_private_message, MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null, HomePhone = item["home_phone"] != null ? item.home_phone : null, Relation = item.relation != null ? item.relation : null });
+                UsersData.Add(new User
+                {
+                    Id = ExpMethods.UrlFromID(item.id.ToString()),
+                    FirstName = item.first_name,
+                    LastName = item.last_name,
+                    Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                    BDate = item["bdate"] != null ? item.bdate : null,
+                    Country = item["country"] != null ? item.country.title : null,
+                    City = item["city"] != null ? item.city.title : null,
+                    PrivateMessage = item.can_write_private_message,
+                    MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                    HomePhone = item["home_phone"] != null ? item.home_phone : null,
+                    Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()).ToString() : null,
+                    Relation = item.relation != null ? item.relation : null,
+                    Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                });
             });
             dgUsers.Items.Refresh();
         }

@@ -33,6 +33,8 @@ namespace VK_Parser
         public string Time { get; set; }
         
         public string Relation { get; set; }
+
+        public string Partner { get; set; }
     }
 
 }

@@ -81,9 +81,9 @@
                     </StackPanel>
                     <StackPanel Margin="5" Grid.Column="2">
                         <Label Margin="0,5,0,0">Sex:</Label>
-                        <ComboBox Name="cbSex" ItemsSource="{Binding Source={StaticResource Sex}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="0" Width="120"></ComboBox>
-                        <Label>Relationship status:</Label>
-                        <ComboBox Name="cbRelationStatus" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
+                        <ComboBox Name="cbSex" Margin="0,0,0,10" ItemsSource="{Binding Source={StaticResource Sex}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="0" Width="120"></ComboBox>
+                        <CheckBox Name="checkBRelation" Margin="0,0,0,5">Relationship status:</CheckBox>
+                        <ComboBox Name="cbRelationStatus" IsEnabled="{Binding ElementName=checkBRelation, Path=IsChecked}" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
                     </StackPanel>
                 </Grid>
             </GroupBox>
@@ -106,6 +106,7 @@
                         <GridViewColumn Header="HomePhone" DisplayMemberBinding="{Binding HomePhone}"/>
                         <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time}"/>
                         <GridViewColumn Header="Relation" DisplayMemberBinding="{Binding Relation}"/>
+                        <GridViewColumn Header="Partner" DisplayMemberBinding="{Binding Partner}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
