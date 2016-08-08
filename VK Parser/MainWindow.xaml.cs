@@ -229,6 +229,21 @@ namespace VK_Parser
                 group_id
                 ));
 
+            string countryFromCB = null;
+            string cityFromCB = null;
+            string realtionFromCB = null;
+            if (checkCountry.IsChecked ?? false)
+            {
+                countryFromCB = cbCountry.SelectedItem.ToString();
+            }
+            if (checkCity.IsChecked ?? false)
+            {
+                cityFromCB = cbCity.SelectedItem.ToString();
+            }
+            if(checkBRelation.IsChecked == true)
+            {
+                realtionFromCB = cbRelationStatus.SelectedValue.ToString();
+            }
 
             Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
             {
@@ -237,15 +252,15 @@ namespace VK_Parser
                     Id = ExpMethods.UrlFromID(item.id.ToString()),
                     FirstName = item.first_name,
                     LastName = item.last_name,
-                    Sex = /*ExpMethods.SexFromNumber(item.sex.ToString())*/ date.ToShortDateString(),
-                    BDate = item["bdate"] != null ? item.bdate : null,
-                    Country = item["country"] != null ? item.country.title : null,
-                    City = item["city"] != null ? item.city.title : null,
+                    Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                    BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
+                    Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
+                    City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
                     PrivateMessage = item.can_write_private_message,
                     MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
                     HomePhone = item["home_phone"] != null ? item.home_phone : null,
                     Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()).ToString() : null,
-                    Relation = item.relation != null ? item.relation : null,
+                    Relation = realtionFromCB != null ? realtionFromCB : (item.relation != null ? item.relation : null),
                     Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
                 });
             });

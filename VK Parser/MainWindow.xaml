@@ -58,16 +58,16 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,5,0">
                                 <RadioButton Name="rbFromList" IsChecked="True" Margin="0,0,0,5" GroupName="selectRegion">from list</RadioButton>
-                                <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">Country:</Label>
+                                <CheckBox Name="checkCountry"  Margin="0,5,0,5">Country:</CheckBox>
                                 <ComboBox Name="cbCountry" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Width="120" Margin="0,0,0,5" IsTextSearchEnabled="True" DropDownClosed="OnCountryChanged"></ComboBox>
-                                <Label IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}">City:</Label>
+                                <CheckBox Name="checkCity" Margin="0,5,0,5">City:</CheckBox>
                                 <ComboBox Name="cbCity" Width="120" IsTextSearchEnabled="True" IsEnabled="{Binding ElementName=rbFromList, Path=IsChecked}" Margin="0,0,0,5"></ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <RadioButton Name="rbByID" Margin="0,0,0,5" GroupName="selectRegion">By ID:</RadioButton>
-                                <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">Country ID:</Label>
-                                <TextBox Name="textCountryId" Width="120" Margin="0,0,0,5" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
-                                <Label IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}">City ID:</Label>
+                                
+                                <TextBox Margin="0,25,0,30" Name="textCountryId" Width="120" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
+                                
                                 <TextBox Name="textCityId" Width="120" Height="22" IsEnabled="{Binding ElementName=rbByID, Path=IsChecked}"></TextBox>
                             </StackPanel>
                         </Grid>
