@@ -39,7 +39,7 @@ namespace VK_Parser
                 return _usersData;
             }
         }
-        
+
 
         public MainWindow()
         {
@@ -113,7 +113,6 @@ namespace VK_Parser
             btnLogin.IsEnabled = false;
             btnLogout.IsEnabled = true;
 
-            groupOptions.IsEnabled = true;
         }
         private void LogoutInterfaceChanges()
         {
@@ -126,8 +125,9 @@ namespace VK_Parser
             groupOptions.IsEnabled = false;
         }
 
-        private async void LoginSucceded()
+        private void LoginSucceded()
         {
+            groupOptions.IsEnabled = true;
         }
 
         private async Task LoadCountries()
@@ -136,7 +136,7 @@ namespace VK_Parser
             dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
 
             Dictionary<string, string> countries = new Dictionary<string, string>();
-            Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items, 
+            Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
                 item => countries.Add(item.id.ToString(), item.title.ToString()));
 
             cbCountry.ItemsSource = countries;
@@ -152,7 +152,7 @@ namespace VK_Parser
 
             citiesResponse = JObject.Parse(await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "0", null, "1000"));
 
-            Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items, 
+            Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items,
                 item => cities.Add(item.id.ToString(), item.title.ToString()));
 
             cbCity.ItemsSource = cities;
@@ -180,7 +180,7 @@ namespace VK_Parser
             await LoadCountries();
             await LoadCities();
             dgUsers.ItemsSource = UsersData;
-            
+
         }
 
         private void InterfaceSetup()
@@ -190,7 +190,7 @@ namespace VK_Parser
         private async void OnCountryChanged(object sender, EventArgs e)
         {
             await LoadCities();
-            
+
         }
 
         private async void OnRegionChanged(object sender, EventArgs e)
@@ -205,34 +205,38 @@ namespace VK_Parser
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
+            groupOptions.IsEnabled = false;
+
             progrBar.Value = 0;
-            progrBar.Maximum = DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days;
-            for(DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
+            progrBar.Maximum = DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1;
+
+            for (DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
             {
                 try
                 {
                     await Task.Delay(1500);
                     await SearchUsers(date, null);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
                 progrBar.Value += 1;
                 changeProgrText();
             }
+            groupOptions.IsEnabled = true;
         }
 
         private async Task SearchUsers(DateTime date, string group_id)
         {
             dynamic responseUsers = JObject.Parse(await API.users.search(
-                (checkCountry.IsChecked ?? false) ? cbCountry.SelectedValue.ToString() : null, 
-                (checkCity.IsChecked ?? false) && (checkCountry.IsChecked ?? false) ? cbCity.SelectedValue.ToString() : null, 
-                cbSex.SelectedValue.ToString(), 
-                checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null, 
-                "1000", 
-                _searchFields, 
-                date, 
+                (checkCountry.IsChecked ?? false) ? cbCountry.SelectedValue.ToString() : null,
+                (checkCity.IsChecked ?? false) && (checkCountry.IsChecked ?? false) ? cbCity.SelectedValue.ToString() : null,
+                cbSex.SelectedValue.ToString(),
+                checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null,
+                "1000",
+                _searchFields,
+                date,
                 group_id
                 ));
 
@@ -241,36 +245,43 @@ namespace VK_Parser
             string realtionFromCB = null;
             if (checkCountry.IsChecked ?? false)
             {
-                countryFromCB = cbCountry.SelectedItem.ToString();
+                countryFromCB = ((KeyValuePair<string, string>)cbCountry.SelectedItem).Value;
             }
             if (checkCity.IsChecked ?? false)
             {
-                cityFromCB = cbCity.SelectedItem.ToString();
+                cityFromCB = ((KeyValuePair<string, string>)cbCity.SelectedItem).Value;
             }
-            if(checkBRelation.IsChecked == true)
+            if (checkBRelation.IsChecked ?? false)
             {
                 realtionFromCB = cbRelationStatus.SelectedValue.ToString();
             }
-
-            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
+            try
             {
-                UsersData.Add(new User
+                Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
                 {
-                    Id = ExpMethods.UrlFromID(item.id.ToString()),
-                    FirstName = item.first_name,
-                    LastName = item.last_name,
-                    Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
-                    BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
-                    Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
-                    City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
-                    PrivateMessage = item.can_write_private_message,
-                    MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
-                    HomePhone = item["home_phone"] != null ? item.home_phone : null,
-                    Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()).ToString() : null,
-                    Relation = realtionFromCB != null ? realtionFromCB : (item.relation != null ? item.relation : null),
-                    Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                    UsersData.Add(new User
+                    {
+                        Id = ExpMethods.UrlFromID(item.id.ToString()),
+                        FirstName = item.first_name,
+                        LastName = item.last_name,
+                        Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                        BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
+                        Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
+                        City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
+                        PrivateMessage = item.can_write_private_message,
+                        MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                        HomePhone = item["home_phone"] != null ? item.home_phone : null,
+                        Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()).ToString() : null,
+                        Relation = realtionFromCB != null ? realtionFromCB : (item.relation != null ? item.relation : null),
+                        Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                    });
+
                 });
-            });
+            }
+            catch (Exception ex)
+            {
+
+            }
             dgUsers.Items.Refresh();
         }
 
@@ -278,6 +289,11 @@ namespace VK_Parser
         {
             UsersData.Clear();
             dgUsers.Items.Refresh();
+        }
+
+        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            UsersData.WriteToCSV();
         }
     }
 

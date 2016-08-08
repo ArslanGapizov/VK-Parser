@@ -15,22 +15,29 @@
             <ColumnDefinition Width="auto"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="0" x:Name="groupLogin" Header="Log in" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top">
-            <StackPanel VerticalAlignment="Top" Margin="5">
-                <Label Name="lbLoginError" Foreground="Red" Visibility="Collapsed"></Label>
-                <Label>Login:</Label>
-                <TextBox Name="textLogin" Margin="0,0,0,5"></TextBox>
-                <Label>Password:</Label>
-                <PasswordBox Name="textPassword" Margin="0,0,0,5"></PasswordBox>
-                <Image x:Name="imageCaptcha" Height="50" Width="130" Visibility="Collapsed"  />
-                <TextBox Name="textCaptcha" Margin="0,0,0,5" Visibility="Collapsed"></TextBox>
-                <CheckBox Name="checkRemember" Margin="0,0,0,5" >Remeber password</CheckBox>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <Button Name="btnLogin" Height="20" Width="50" Margin="0,0,20,0" Click="btnLogin_Click">Login</Button>
-                    <Button Name="btnLogout" Height="20" Width="50" Click="btnLogout_Click">Logout</Button>
+        <StackPanel Grid.Column="0">
+            <GroupBox x:Name="groupLogin" Header="Log in" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top">
+                <StackPanel VerticalAlignment="Top" Margin="5">
+                    <Label Name="lbLoginError" Foreground="Red" Visibility="Collapsed"></Label>
+                    <Label>Login:</Label>
+                    <TextBox Name="textLogin" Margin="0,0,0,5"></TextBox>
+                    <Label>Password:</Label>
+                    <PasswordBox Name="textPassword" Margin="0,0,0,5"></PasswordBox>
+                    <Image x:Name="imageCaptcha" Height="50" Width="130" Visibility="Collapsed"  />
+                    <TextBox Name="textCaptcha" Margin="0,0,0,5" Visibility="Collapsed"></TextBox>
+                    <CheckBox Name="checkRemember" Margin="0,0,0,5" >Remeber password</CheckBox>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button Name="btnLogin" Height="20" Width="50" Margin="0,0,20,0" Click="btnLogin_Click">Login</Button>
+                        <Button Name="btnLogout" Height="20" Width="50" Click="btnLogout_Click">Logout</Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </GroupBox>
+            </GroupBox>
+            <GroupBox Header="Save results">
+                <StackPanel>
+                    <Button Name="SaveBtn" Height="25" Width="75" Click="SaveBtn_Click">Save</Button>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
