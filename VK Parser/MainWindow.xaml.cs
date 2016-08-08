@@ -135,10 +135,8 @@ namespace VK_Parser
             dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
 
             Dictionary<string, string> countries = new Dictionary<string, string>();
-            foreach (dynamic item in countriesResponse.response.items)
-            {
-                countries.Add(item.id.ToString(), item.title.ToString());
-            }
+            Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items, 
+                item => countries.Add(item.id.ToString(), item.title.ToString()));
 
             cbCountry.ItemsSource = countries;
             cbCountry.DisplayMemberPath = "Value";
@@ -153,10 +151,8 @@ namespace VK_Parser
 
             citiesResponse = JObject.Parse(await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "0", null, "1000"));
 
-            foreach (dynamic item in citiesResponse.response.items)
-            {
-                cities.Add(item.id.ToString(), item.title.ToString());
-            }
+            Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items, 
+                item => cities.Add(item.id.ToString(), item.title.ToString()));
 
             cbCity.ItemsSource = cities;
             cbCity.DisplayMemberPath = "Value";
