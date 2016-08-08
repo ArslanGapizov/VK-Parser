@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -197,26 +198,36 @@ namespace VK_Parser
             await LoadCities();
         }
 
+        private async void changeProgrText()
+        {
+            progrText.Text = "Кол-во записей: " + UsersData.Count;
+        }
+
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
+            progrBar.Value = 0;
+            progrBar.Maximum = DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days;
             for(DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
             {
                 try
                 {
-                    await Search(date, null);
+                    await Task.Delay(1500);
+                    await SearchUsers(date, null);
                 }
                 catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+                progrBar.Value += 1;
+                changeProgrText();
             }
         }
 
-        private async Task Search(DateTime date, string group_id)
+        private async Task SearchUsers(DateTime date, string group_id)
         {
             dynamic responseUsers = JObject.Parse(await API.users.search(
-                cbCountry.SelectedValue.ToString(), 
-                cbCity.SelectedValue.ToString(), 
+                (checkCountry.IsChecked ?? false) ? cbCountry.SelectedValue.ToString() : null, 
+                (checkCity.IsChecked ?? false) && (checkCountry.IsChecked ?? false) ? cbCity.SelectedValue.ToString() : null, 
                 cbSex.SelectedValue.ToString(), 
                 checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null, 
                 "1000", 
@@ -260,6 +271,12 @@ namespace VK_Parser
                     Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
                 });
             });
+            dgUsers.Items.Refresh();
+        }
+
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            UsersData.Clear();
             dgUsers.Items.Refresh();
         }
     }
