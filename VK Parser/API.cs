@@ -127,15 +127,20 @@ namespace VK_Parser
 
         public static class users
         {
-            public static async Task<string> search(string country, string city, string sex, string count, string fields)
+            public static async Task<string> search(string country, string city, string sex, string status, string count, string fields, DateTime date, string group_id)
             {
                 return await RunAsync("users.search", new Dictionary<string, string>
                 {
                     { "country", country },
                     { "city", city },
                     { "sex", sex },
+                    { "status", status },
                     { "count",  count},
-                    { "fields", fields }
+                    { "fields", fields },
+                    { "birth_day", date.Day.ToString() },
+                    { "birth_month", date.Month.ToString() },
+                    { "birth_year", date.Year.ToString() },
+                    { "group_id",  group_id}
                 });
             }
         }

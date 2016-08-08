@@ -203,17 +203,41 @@ namespace VK_Parser
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
-            dynamic responseUsers = JObject.Parse(await API.users.search(cbCountry.SelectedValue.ToString(), cbCity.SelectedValue.ToString(), cbSex.SelectedValue.ToString(),"1000", _searchFields));
+            for(DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
+            {
+                try
+                {
+                    await Search(date, null);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
 
-            
-            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item => 
+        private async Task Search(DateTime date, string group_id)
+        {
+            dynamic responseUsers = JObject.Parse(await API.users.search(
+                cbCountry.SelectedValue.ToString(), 
+                cbCity.SelectedValue.ToString(), 
+                cbSex.SelectedValue.ToString(), 
+                checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null, 
+                "1000", 
+                _searchFields, 
+                date, 
+                group_id
+                ));
+
+
+            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
             {
                 UsersData.Add(new User
                 {
                     Id = ExpMethods.UrlFromID(item.id.ToString()),
                     FirstName = item.first_name,
                     LastName = item.last_name,
-                    Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                    Sex = /*ExpMethods.SexFromNumber(item.sex.ToString())*/ date.ToShortDateString(),
                     BDate = item["bdate"] != null ? item.bdate : null,
                     Country = item["country"] != null ? item.country.title : null,
                     City = item["city"] != null ? item.city.title : null,
