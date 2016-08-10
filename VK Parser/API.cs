@@ -52,7 +52,6 @@ namespace VK_Parser
             return await (await GetAsync(result)).Content.ReadAsStringAsync();
         }
 
-
         public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
         {
             string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1", ClientId, ClientSecret, login, password, Version);
@@ -87,7 +86,6 @@ namespace VK_Parser
                     { "count", count }
                 });
             }
-
             public static async Task<string> getRegions(string country_id, string q, string offset, string count)
             {
                 return await RunAsync("database.getRegions", new Dictionary<string, string>
@@ -98,7 +96,6 @@ namespace VK_Parser
                     { "count", count }
                 });
             }
-
             public static async Task<string> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
             {
                 return await RunAsync("database.getCities", new Dictionary<string, string>
@@ -111,7 +108,6 @@ namespace VK_Parser
                     { "count", count }
                 });
             }
-
             public static async Task<string> getUniversities(string q, string country_id, string city_id, string offset, string count)
             {
                 return await RunAsync("database.getUniversities", new Dictionary<string, string>

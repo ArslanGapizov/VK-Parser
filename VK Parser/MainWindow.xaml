@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VK_Parser"
         mc:Ignorable="d"
-        Title="VK Parser" Height="500" Width="900" Loaded="Window_Loaded">
+        Title="VK Parser" Height="500" Width="1100" Loaded="Window_Loaded">
     <Window.Resources>
         <ObjectDataProvider x:Key="Sex" ObjectType="{x:Type local:CollectionData}" MethodName="CollectionSex"></ObjectDataProvider>
         <ObjectDataProvider x:Key="Relationship" ObjectType="{x:Type local:CollectionData}" MethodName="CollectionRelationshipStatus"></ObjectDataProvider>
@@ -43,6 +43,7 @@
             <GroupBox Grid.Row="0" x:Name="groupOptions" Header="Options" HorizontalAlignment="Left" Width="auto" VerticalAlignment="Top">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -92,6 +93,10 @@
                         <ComboBox Name="cbUniversity" IsEditable="True" KeyUp="University_KeyUp" IsEnabled="{Binding ElementName=checkUniversity, Path=IsChecked}"></ComboBox>
                     </StackPanel>
                     <StackPanel Grid.Column="3">
+                        <CheckBox Name="checkInGroups" Width="150">Search in groups (separate with commas)</CheckBox>
+                        <TextBox Name="textListOfGroups" Width="150" Height="150" Margin="5" IsEnabled="{Binding ElementName=checkInGroups, Path=IsChecked}"  TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
                         <Label>Delay between queries</Label>
                         <Slider Name="sliderDelay" Minimum="0" Maximum="3000" Value="1500" Width="150" />
                         <TextBox Text="{Binding ElementName=sliderDelay, Path=Value}"></TextBox>

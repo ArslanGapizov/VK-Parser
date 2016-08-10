@@ -17,17 +17,14 @@ namespace VK_Parser
             DateTime origin = _unixTime;
             return origin.AddSeconds(double.Parse(timestamp)).ToLocalTime();
         }
-
         public static string UrlFromID(string id)
         {
             return _vkUrl + "id" + id;
         }
-
         public static string SexFromNumber(string number)
         {
             return number == "1" ? "female" : "male";
         }
-
         public static async Task<bool> WriteToCSV(IEnumerable<User> usersData, string filePath)
         {
             var csv = new StringBuilder();

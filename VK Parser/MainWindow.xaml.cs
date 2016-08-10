@@ -190,9 +190,23 @@ namespace VK_Parser
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
             groupOptions.IsEnabled = false;
-
+            string[] groups = null;
+            if (checkInGroups.IsChecked == true)
+            {
+                groups = textListOfGroups.Text.Split(',');
+            }
             progrBar.Value = 0;
-            progrBar.Maximum = DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1;
+            progrBar.Maximum = (DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1) * ((groups != null) ? groups.Length : 1);
+            
+            foreach(var group in groups)
+            {
+                SearchGroups(group);
+            }
+
+            groupOptions.IsEnabled = true;
+        }
+        private async void SearchGroups(string group_id)
+        {
             int delay = Convert.ToInt32(sliderDelay.Value);
 
             for (DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
@@ -200,7 +214,7 @@ namespace VK_Parser
                 try
                 {
                     await Task.Delay(delay);
-                    await SearchUsers(date, null);
+                    await SearchUsers(date, group_id);
                 }
                 catch (Exception ex)
                 {
@@ -209,7 +223,6 @@ namespace VK_Parser
                 progrBar.Value += 1;
                 changeProgrText();
             }
-            groupOptions.IsEnabled = true;
         }
         private async Task SearchUsers(DateTime date, string group_id)
         {
