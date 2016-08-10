@@ -136,8 +136,9 @@ namespace VK_Parser
             dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
 
             Dictionary<string, string> countries = new Dictionary<string, string>();
+            object lockMe = new object();
             Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
-                item => countries.Add(item.id.ToString(), item.title.ToString()));
+                item => { lock (lockMe) { countries.Add(item.id.ToString(), item.title.ToString()); } });
 
             cbCountry.ItemsSource = countries;
             cbCountry.DisplayMemberPath = "Value";
@@ -152,8 +153,9 @@ namespace VK_Parser
 
             citiesResponse = JObject.Parse(await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "0", null, "1000"));
 
+            object lockMe = new object();
             Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items,
-                item => cities.Add(item.id.ToString(), item.title.ToString()));
+                item => { lock (lockMe) { cities.Add(item.id.ToString(), item.title.ToString()); } });
 
             cbCity.ItemsSource = cities;
             cbCity.DisplayMemberPath = "Value";
@@ -162,12 +164,7 @@ namespace VK_Parser
         }
         private void LoadSex()
         {
-            Dictionary<string, string> sexDictionary = new Dictionary<string, string> {
-                                                                                        { "1", "женщина"},
-                                                                                        { "2", "мужчина"},
-                                                                                        { "0", "любой"}
-                                                                                      };
-            cbSex.ItemsSource = sexDictionary;
+            cbSex.ItemsSource = CollectionData.CollectionSex();
             cbSex.DisplayMemberPath = "Value";
             cbSex.SelectedValuePath = "Key";
             cbSex.SelectedValue = "0";
@@ -257,25 +254,28 @@ namespace VK_Parser
             }
             try
             {
+                object lockMe = new object();
                 Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
                 {
-                    UsersData.Add(new User
+                    lock (lockMe)
                     {
-                        Id = ExpMethods.UrlFromID(item.id.ToString()),
-                        FirstName = item.first_name,
-                        LastName = item.last_name,
-                        Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
-                        BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
-                        Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
-                        City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
-                        PrivateMessage = item.can_write_private_message,
-                        MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
-                        HomePhone = item["home_phone"] != null ? item.home_phone : null,
-                        Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()).ToString() : null,
-                        Relation = realtionFromCB != null ? realtionFromCB : (item.relation != null ? item.relation : null),
-                        Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
-                    });
-
+                        UsersData.Add(new User
+                        {
+                            Id = ExpMethods.UrlFromID(item.id.ToString()),
+                            FirstName = item.first_name,
+                            LastName = item.last_name,
+                            Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                            BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
+                            Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
+                            City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
+                            PrivateMessage = item.can_write_private_message,
+                            MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                            HomePhone = item["home_phone"] != null ? item.home_phone : null,
+                            Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
+                            Relation = realtionFromCB != null ? realtionFromCB : (item.relation != null ? item.relation : null),
+                            Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                        });
+                    }
                 });
             }
             catch (Exception ex)
@@ -293,7 +293,19 @@ namespace VK_Parser
 
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            UsersData.WriteToCSV();
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "Document";
+            dlg.DefaultExt = ".csv";
+            dlg.Filter = "(.csv)|*.csv";
+
+            bool? result = dlg.ShowDialog();
+
+            if(result == true)
+            {
+                bool successed = await ExpMethods.WriteToCSV(UsersData, dlg.FileName);
+
+                MessageBox.Show(successed == true ? "Файл успешно сохранен" : "Произошла ошибка");
+            }
         }
     }
 

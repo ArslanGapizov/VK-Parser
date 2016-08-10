@@ -30,7 +30,7 @@ namespace VK_Parser
         
         public string HomePhone { get; set; }
         
-        public string Time { get; set; }
+        public DateTime Time { get; set; }
         
         public string Relation { get; set; }
 

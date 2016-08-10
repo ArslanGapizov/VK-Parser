@@ -28,24 +28,25 @@ namespace VK_Parser
             return number == "1" ? "female" : "male";
         }
 
-        public static async Task WriteToCSV(this IEnumerable<User> usersData)
+        public static async Task<bool> WriteToCSV(IEnumerable<User> usersData, string filePath)
         {
-
-            var filePath = @"C:\Users\Arslan\Desktop\OutFile.csv";
             var csv = new StringBuilder();
 
 
             var header = "id,FirstName,LastName,Sex,BDate,Country,City,PM,MobilePhone,HomePhone,Time,Relation,Partner";
             csv.AppendLine(header);
 
-            Parallel.ForEach(usersData, user =>
+            try
             {
-                if (user != null)
+                object lockMe = new object();
+                Parallel.ForEach(usersData, user =>
                 {
-                    lock (csv)
+                    if (user != null)
                     {
-                        object[] row =
+                        lock (lockMe)
                         {
+                            object[] row =
+                            {
                             string.Format("\"{0}\"", user.Id),
                             string.Format("\"{0}\"", user.FirstName),
                             string.Format("\"{0}\"", user.LastName),
@@ -56,16 +57,23 @@ namespace VK_Parser
                             string.Format("\"{0}\"", user.PrivateMessage),
                             string.Format("\"{0}\"", user.MobilePhone),
                             string.Format("\"{0}\"", user.HomePhone),
-                            string.Format("\"{0}\"", user.Time),
+                            string.Format("\"{0}\"", user.Time.ToString("yyyy-MM-dd HH:mm:ss")),
                             string.Format("\"{0}\"", user.Relation),
                             string.Format("\"{0}\"", user.Partner)
-                        };
-                        csv.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}", row));
+                            };
+                            csv.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}", row));
+                        }
                     }
-                }
-            });
+                });
 
-            File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
+                File.WriteAllText(filePath, csv.ToString(), Encoding.UTF8);
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
 
 
