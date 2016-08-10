@@ -39,14 +39,12 @@ namespace VK_Parser
                 return _usersData;
             }
         }
-
-
+        
         public MainWindow()
         {
             InitializeComponent();
 
         }
-
         private async void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             LoginInterfaceChanges();
@@ -97,14 +95,12 @@ namespace VK_Parser
 
             LogoutInterfaceChanges();
         }
-
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             API.AccessToken = "";
             //TODO: Kill threads
             LogoutInterfaceChanges();
         }
-
         private void LoginInterfaceChanges()
         {
             textLogin.IsEnabled = false;
@@ -124,12 +120,10 @@ namespace VK_Parser
 
             groupOptions.IsEnabled = false;
         }
-
         private void LoginSucceded()
         {
             groupOptions.IsEnabled = true;
         }
-
         private async Task LoadCountries()
         {
 
@@ -145,7 +139,6 @@ namespace VK_Parser
             cbCountry.SelectedValuePath = "Key";
             cbCountry.SelectedValue = "1";
         }
-
         private async Task LoadCities()
         {
             dynamic citiesResponse;
@@ -169,7 +162,6 @@ namespace VK_Parser
             cbSex.SelectedValuePath = "Key";
             cbSex.SelectedValue = "0";
         }
-
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
@@ -179,39 +171,35 @@ namespace VK_Parser
             dgUsers.ItemsSource = UsersData;
 
         }
-
         private void InterfaceSetup()
         {
         }
-
         private async void OnCountryChanged(object sender, EventArgs e)
         {
             await LoadCities();
 
         }
-
         private async void OnRegionChanged(object sender, EventArgs e)
         {
             await LoadCities();
         }
-
         private async void changeProgrText()
         {
             progrText.Text = "Кол-во записей: " + UsersData.Count;
         }
-
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
             groupOptions.IsEnabled = false;
 
             progrBar.Value = 0;
             progrBar.Maximum = DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1;
+            int delay = Convert.ToInt32(sliderDelay.Value);
 
             for (DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
             {
                 try
                 {
-                    await Task.Delay(1500);
+                    await Task.Delay(delay);
                     await SearchUsers(date, null);
                 }
                 catch (Exception ex)
@@ -223,12 +211,12 @@ namespace VK_Parser
             }
             groupOptions.IsEnabled = true;
         }
-
         private async Task SearchUsers(DateTime date, string group_id)
         {
             dynamic responseUsers = JObject.Parse(await API.users.search(
                 (checkCountry.IsChecked ?? false) ? cbCountry.SelectedValue.ToString() : null,
                 (checkCity.IsChecked ?? false) && (checkCountry.IsChecked ?? false) ? cbCity.SelectedValue.ToString() : null,
+                (checkUniversity.IsChecked == true && cbUniversity.SelectedItem != null) ? cbUniversity.SelectedValue.ToString() : null,
                 cbSex.SelectedValue.ToString(),
                 checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null,
                 "1000",
@@ -265,7 +253,7 @@ namespace VK_Parser
                             FirstName = item.first_name,
                             LastName = item.last_name,
                             Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
-                            BDate = /*item["bdate"] != null ? item.bdate : null*/date.ToShortDateString(),
+                            BDate = date.ToShortDateString(),
                             Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
                             City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
                             PrivateMessage = item.can_write_private_message,
@@ -284,13 +272,11 @@ namespace VK_Parser
             }
             dgUsers.Items.Refresh();
         }
-
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             UsersData.Clear();
             dgUsers.Items.Refresh();
         }
-
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -307,7 +293,6 @@ namespace VK_Parser
                 MessageBox.Show(successed == true ? "Файл успешно сохранен" : "Произошла ошибка");
             }
         }
-        
         private async void University_KeyUp(object sender, KeyEventArgs e)
         {
             string heldText = cbUniversity.Text;
@@ -332,9 +317,7 @@ namespace VK_Parser
             cbUniversity.Text = heldText;
         }
     }
-
-
-
+    
     public static class CollectionData
     {
         public static Dictionary<string, string> CollectionSex()

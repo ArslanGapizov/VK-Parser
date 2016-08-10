@@ -46,6 +46,7 @@
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="0" Margin="5">
@@ -89,6 +90,11 @@
                         <ComboBox Name="cbRelationStatus" Margin="0,0,0,10" IsEnabled="{Binding ElementName=checkBRelation, Path=IsChecked}" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
                         <CheckBox Name="checkUniversity" Margin="0,0,0,5">University</CheckBox>
                         <ComboBox Name="cbUniversity" IsEditable="True" KeyUp="University_KeyUp" IsEnabled="{Binding ElementName=checkUniversity, Path=IsChecked}"></ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <Label>Delay between queries</Label>
+                        <Slider Name="sliderDelay" Minimum="0" Maximum="3000" Value="1500" Width="150" />
+                        <TextBox Text="{Binding ElementName=sliderDelay, Path=Value}"></TextBox>
                     </StackPanel>
                 </Grid>
             </GroupBox>
