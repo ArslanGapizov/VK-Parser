@@ -86,7 +86,9 @@
                         <Label Margin="0,5,0,0">Sex:</Label>
                         <ComboBox Name="cbSex" Margin="0,0,0,10" ItemsSource="{Binding Source={StaticResource Sex}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="0" Width="120"></ComboBox>
                         <CheckBox Name="checkBRelation" Margin="0,0,0,5">Relationship status:</CheckBox>
-                        <ComboBox Name="cbRelationStatus" IsEnabled="{Binding ElementName=checkBRelation, Path=IsChecked}" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
+                        <ComboBox Name="cbRelationStatus" Margin="0,0,0,10" IsEnabled="{Binding ElementName=checkBRelation, Path=IsChecked}" ItemsSource="{Binding Source={StaticResource Relationship}}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="1" Width="120"></ComboBox>
+                        <CheckBox Name="checkUniversity" Margin="0,0,0,5">University</CheckBox>
+                        <ComboBox Name="cbUniversity" IsEditable="True" KeyUp="University_KeyUp" IsEnabled="{Binding ElementName=checkUniversity, Path=IsChecked}"></ComboBox>
                     </StackPanel>
                 </Grid>
             </GroupBox>

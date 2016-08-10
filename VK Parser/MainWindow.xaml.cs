@@ -307,6 +307,30 @@ namespace VK_Parser
                 MessageBox.Show(successed == true ? "Файл успешно сохранен" : "Произошла ошибка");
             }
         }
+        
+        private async void University_KeyUp(object sender, KeyEventArgs e)
+        {
+            string heldText = cbUniversity.Text;
+            
+            dynamic countriesResponse = JObject.Parse(await API.database.getUniversities(heldText, checkCountry.IsChecked == true ? cbCountry.SelectedValue.ToString() : null, checkCity.IsChecked == true ? cbCity.SelectedValue.ToString() : null, null, "10000"));
+
+            Dictionary<string, string> universities = new Dictionary<string, string>();
+            object lockMe = new object();
+            try
+            {
+                Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
+                    item => { lock (lockMe) { universities.Add(item.id.ToString(), item.title.ToString()); } });
+
+                cbUniversity.ItemsSource = universities;
+                cbUniversity.DisplayMemberPath = "Value";
+                cbUniversity.SelectedValuePath = "Key";
+            }
+            catch (Exception ex)
+            {
+
+            }
+            cbUniversity.Text = heldText;
+        }
     }
 
 
