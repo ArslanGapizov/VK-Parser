@@ -11,22 +11,26 @@ namespace VK_Parser
 {
     public static class ExpMethods
     {
+        /*unix data time equal to zero*/
         private static readonly DateTime _unixTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         private static readonly string _vkUrl = "https://vk.com/";
-
+        /*method for converting unix timestamp to DateTime*/
         public static DateTime UnixTimeToDateTime(string timestamp)
         {
             DateTime origin = _unixTime;
             return origin.AddSeconds(double.Parse(timestamp)).ToLocalTime();
         }
+        /*transfrom id to url*/
         public static string UrlFromID(string id)
         {
             return _vkUrl + "id" + id;
         }
+        /*returns sex according to it`s id*/
         public static string SexFromNumber(string number)
         {
             return number == "1" ? "female" : "male";
         }
+        /*write data to CSV file*/
         public static async Task<bool> WriteToCSV(IEnumerable<User> usersData, string filePath)
         {
             var csv = new StringBuilder();
@@ -74,7 +78,7 @@ namespace VK_Parser
                 return false;
             }
         }
-
+        /*returns array of group`s ids from it`s urls*/
         public static async Task<string[]> GroupUrlToId(string[] urls)
         {
             List<string> group_ids = new List<string>();

@@ -104,10 +104,10 @@
                 </Grid>
             </GroupBox>
             <StackPanel Grid.Row="1" Margin="5" Orientation="Horizontal">
-                <Button Margin="5" Height="25" Width="75" Click="Search_Click">Search</Button>
-                <Button Margin="5" Height="25" Width="75">Stop</Button>
-                <Button Margin="5" Height="25" Width="75" Click="Clear_Click">Clear</Button>
-                <Button Margin="5" Name="SaveBtn" Height="25" Width="75" Click="SaveBtn_Click">Save</Button>
+                <Button Name="btnSearch" Margin="5" Height="25" Width="75" Click="Search_Click">Search</Button>
+                <Button Name="btnStop" Margin="5" Height="25" Width="75">Stop</Button>
+                <Button Name="btnClear" Margin="5" Height="25" Width="75" Click="Clear_Click">Clear</Button>
+                <Button Name="btnSave" Margin="5" Height="25" Width="75" Click="SaveBtn_Click">Save</Button>
             </StackPanel>
             <ListView FontSize="14" Grid.Row="2" Name="dgUsers"  ItemsSource="{Binding Path=User}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <ListView.View>
