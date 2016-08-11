@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace VK_Parser
 {
@@ -67,12 +69,41 @@ namespace VK_Parser
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
         }
 
+        public static async Task<string[]> GroupUrlToId(string[] urls)
+        {
+            List<string> group_ids = new List<string>();
+            foreach (var url in urls)
+            {
+                group_ids.Add(url.Split('/').Last());
+            }
+            List<string> result = new List<string>();
 
+            try
+            {
+                foreach (var id in group_ids)
+                {
+                    JObject group = JObject.Parse(await API.groups.getById(id, null));
+                    if (group["response"] != null)
+                    {
+                        string respID = (((JArray)group["response"]).Children<JObject>().FirstOrDefault(item => item["screen_name"] != null && item["screen_name"].ToString() == id))["id"].ToString();
+                        if (respID != null)
+                            result.Add(respID);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+
+            return result.ToArray();
+        }
     }
 }

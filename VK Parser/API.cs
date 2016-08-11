@@ -141,5 +141,17 @@ namespace VK_Parser
                 });
             }
         }
+
+        public static class groups
+        {
+            public static async Task<string> getById(string group_ids, string group_id)
+            {
+                return await RunAsync("groups.getById", new Dictionary<string, string>
+                {
+                    { "group_ids", group_ids },
+                    { "group_id", group_id }
+                });
+            }
+        }
     }
 }

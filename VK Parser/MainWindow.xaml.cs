@@ -39,7 +39,7 @@ namespace VK_Parser
                 return _usersData;
             }
         }
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -190,22 +190,29 @@ namespace VK_Parser
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
             groupOptions.IsEnabled = false;
-            string[] groups = null;
-            if (checkInGroups.IsChecked == true)
-            {
-                groups = textListOfGroups.Text.Split(',');
-            }
-            progrBar.Value = 0;
-            progrBar.Maximum = (DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1) * ((groups != null) ? groups.Length : 1);
             
-            foreach(var group in groups)
+            string[] urls = textListOfGroups.Text.Split(',');
+
+            progrBar.Value = 0;
+            progrBar.Maximum = (DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1);
+
+            if (!(checkInGroups.IsChecked ?? false))
             {
-                SearchGroups(group);
+                await SearchGroups(null);
+            }
+            else
+            {
+                string[] groupsID = await ExpMethods.GroupUrlToId(urls);
+                progrBar.Maximum *= groupsID.Length;
+                foreach (var group_id in groupsID)
+                {
+                    await SearchGroups(group_id);
+                }
             }
 
             groupOptions.IsEnabled = true;
         }
-        private async void SearchGroups(string group_id)
+        private async Task SearchGroups(string group_id)
         {
             int delay = Convert.ToInt32(sliderDelay.Value);
 
@@ -299,7 +306,7 @@ namespace VK_Parser
 
             bool? result = dlg.ShowDialog();
 
-            if(result == true)
+            if (result == true)
             {
                 bool successed = await ExpMethods.WriteToCSV(UsersData, dlg.FileName);
 
@@ -309,7 +316,7 @@ namespace VK_Parser
         private async void University_KeyUp(object sender, KeyEventArgs e)
         {
             string heldText = cbUniversity.Text;
-            
+
             dynamic countriesResponse = JObject.Parse(await API.database.getUniversities(heldText, checkCountry.IsChecked == true ? cbCountry.SelectedValue.ToString() : null, checkCity.IsChecked == true ? cbCity.SelectedValue.ToString() : null, null, "10000"));
 
             Dictionary<string, string> universities = new Dictionary<string, string>();
@@ -330,7 +337,7 @@ namespace VK_Parser
             cbUniversity.Text = heldText;
         }
     }
-    
+
     public static class CollectionData
     {
         public static Dictionary<string, string> CollectionSex()
