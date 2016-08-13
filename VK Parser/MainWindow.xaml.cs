@@ -22,6 +22,7 @@ namespace VK_Parser
 {
     public partial class MainWindow : Window
     {
+        CancellationTokenSource _cts;
         public string CaptchaSid { get; set; }
         /*Fields for response users json*/
         private string _searchFields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation";
@@ -106,9 +107,10 @@ namespace VK_Parser
         /*click on logout button*/
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
+            /*Stop Search if in progress*/
+            StopSearch();
             /*set access token in null*/
             API.AccessToken = null;
-            //TODO: Kill threads
             /*set interface in logout possition*/
             LogoutInterfaceChanges();
         }
@@ -120,7 +122,7 @@ namespace VK_Parser
             checkRemember.IsEnabled = false;
             btnLogin.IsEnabled = false;
             btnLogout.IsEnabled = true;
-            
+
         }
         /*set interface in posstion logout, it executes after clicking on logout button or if login was failed*/
         private void LogoutInterfaceChanges()
@@ -150,13 +152,7 @@ namespace VK_Parser
         /*loud contiries from api*/
         private async Task LoadCountries()
         {
-            dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
-
-            Dictionary<string, string> countries = new Dictionary<string, string>();
-            object lockMe = new object();
-            Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
-                item => { lock (lockMe) { countries.Add(item.id.ToString(), item.title.ToString()); } });
-
+            Dictionary<string, string> countries = await CollectionData.CollectionContries();
             cbCountry.ItemsSource = countries;
             cbCountry.DisplayMemberPath = "Value";
             cbCountry.SelectedValuePath = "Key";
@@ -165,14 +161,7 @@ namespace VK_Parser
         /*load cities from api*/
         private async Task LoadCities()
         {
-            dynamic citiesResponse;
-            Dictionary<string, string> cities = new Dictionary<string, string>();
-
-            citiesResponse = JObject.Parse(await API.database.getCites(cbCountry.SelectedValue.ToString(), null, null, "0", null, "1000"));
-
-            object lockMe = new object();
-            Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items,
-                item => { lock (lockMe) { cities.Add(item.id.ToString(), item.title.ToString()); } });
+            Dictionary<string, string> cities = await CollectionData.CollectionCities(cbCountry.SelectedValue.ToString());
 
             cbCity.ItemsSource = cities;
             cbCity.DisplayMemberPath = "Value";
@@ -202,7 +191,7 @@ namespace VK_Parser
             await LoadCities();
         }
         /*changes text on progress bar*/
-        private  void changeProgrText()
+        private void changeProgrText()
         {
             progrText.Text = "Кол-во записей: " + UsersData.Count;
         }
@@ -220,7 +209,8 @@ namespace VK_Parser
         {
             /*Disable options after clicking*/
             SearchInProgress(true);
-            
+            /*Cancellation token for killing this task, cancel executes on click stop btn or logout btn*/
+            _cts = new CancellationTokenSource();
             /*get urls from groups box*/
             string[] urls = textListOfGroups.Text.Split(',');
 
@@ -228,25 +218,36 @@ namespace VK_Parser
             progrBar.Value = 0;
             /*set porgressBar`s maximum rely on qty days in search`s options*/
             progrBar.Maximum = (DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1);
-
-            /*general search if checkBox inGroups unchecked*/
-            if (!(checkInGroups.IsChecked ?? false))
+            
+            try
             {
-                /*pass null if it doesnt need to search in groups*/
-                await SearchGroup(null);
-            }
-            /*search in groups*/
-            else
-            {
-                /*it gets group ids from group urls*/
-                string[] groupsID = await ExpMethods.GroupUrlToId(urls);
-                /*increase progressBar maximum in groups.lenght times*/
-                progrBar.Maximum *= groupsID.Length;
-                /*pass each group id in SearchGroup*/
-                foreach (var group_id in groupsID)
+                /*general search if checkBox inGroups unchecked*/
+                if (!(checkInGroups.IsChecked ?? false))
                 {
-                    await SearchGroup(group_id);
+                    /*pass null if it doesnt need to search in groups*/
+                    await SearchGroup(null);
                 }
+                /*search in groups*/
+                else
+                {
+                    /*it gets group ids from group urls*/
+                    string[] groupsID = await ExpMethods.GroupUrlToId(urls);
+                    /*increase progressBar maximum in groups.lenght times*/
+                    progrBar.Maximum *= groupsID.Length;
+                    /*pass each group id in SearchGroup*/
+                    foreach (var group_id in groupsID)
+                    {
+                        await SearchGroup(group_id);
+                    }
+
+                }
+            }
+            catch (OperationCanceledException ocex)
+            {
+            }
+            finally
+            {
+                _cts = null;
             }
             /*unblock options interface after searching*/
             SearchInProgress(false);
@@ -259,6 +260,7 @@ namespace VK_Parser
             /*needs setting birthday dates, it goes from start date to end date*/
             for (DateTime date = DateStart.DisplayDate; date <= DateEnd.DisplayDate; date = date.AddDays(1))
             {
+                _cts.Token.ThrowIfCancellationRequested();
                 try
                 {
                     /*wait between queries*/
@@ -311,42 +313,36 @@ namespace VK_Parser
                 realationFromCB = cbRelationStatus.SelectedValue.ToString();
             }
 
-            try
-            {
-                object lockMe = new object();
-                /*add users from query to list*/
-                Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
-                {
-                    lock (lockMe)
-                    {
-                        UsersData.Add(new User
-                        {
-                            Id = ExpMethods.UrlFromID(item.id.ToString()),/*transform user id to link*/
-                            FirstName = item.first_name,
-                            LastName = item.last_name,
-                            Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
-                            BDate = date.ToShortDateString(),
-                            /*if country is known write it from comboBox, otherwise from JSON*/
-                            Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
-                            /*if city is known write it from comboBox, otherwise from JSON*/
-                            City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
-                            PrivateMessage = item.can_write_private_message,
-                            MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
-                            HomePhone = item["home_phone"] != null ? item.home_phone : null,
-                            /*convert unix format to datetime*/
-                            Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
-                            /*if relation is known write it from comboBox, otherwise from JSON*/
-                            Relation = realationFromCB != null ? realationFromCB : (item.relation != null ? item.relation : null),
-                            /*transform partner id to link*/
-                            Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
-                        });
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
 
-            }
+            object lockMe = new object();
+            /*add users from query to list*/
+            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
+            {
+                lock (lockMe)
+                {
+                    UsersData.Add(new User
+                    {
+                        Id = ExpMethods.UrlFromID(item.id.ToString()),/*transform user id to link*/
+                        FirstName = item.first_name,
+                        LastName = item.last_name,
+                        Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                        BDate = date.ToShortDateString(),
+                        /*if country is known write it from comboBox, otherwise from JSON*/
+                        Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
+                        /*if city is known write it from comboBox, otherwise from JSON*/
+                        City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
+                        PrivateMessage = item.can_write_private_message,
+                        MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                        HomePhone = item["home_phone"] != null ? item.home_phone : null,
+                        /*convert unix format to datetime*/
+                        Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
+                        /*if relation is known write it from comboBox, otherwise from JSON*/
+                        Relation = realationFromCB != null ? realationFromCB : (item.relation != null ? item.relation : null),
+                        /*transform partner id to link*/
+                        Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                    });
+                }
+            });
             /*refresh datagrid after adding users*/
             dgUsers.Items.Refresh();
         }
@@ -395,11 +391,23 @@ namespace VK_Parser
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
             /*after setting itemsource text was deleted for combobox, it returns text to combobox*/
             cbUniversity.Text = heldText;
         }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            StopSearch();
+        }
+        private void StopSearch()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+            }
+        }
     }
-    
+
 }

@@ -105,7 +105,7 @@
             </GroupBox>
             <StackPanel Grid.Row="1" Margin="5" Orientation="Horizontal">
                 <Button Name="btnSearch" Margin="5" Height="25" Width="75" Click="Search_Click">Search</Button>
-                <Button Name="btnStop" Margin="5" Height="25" Width="75">Stop</Button>
+                <Button Name="btnStop" Margin="5" Height="25" Width="75" Click="btnStop_Click">Stop</Button>
                 <Button Name="btnClear" Margin="5" Height="25" Width="75" Click="Clear_Click">Clear</Button>
                 <Button Name="btnSave" Margin="5" Height="25" Width="75" Click="SaveBtn_Click">Save</Button>
             </StackPanel>
