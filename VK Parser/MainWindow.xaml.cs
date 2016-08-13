@@ -138,7 +138,7 @@ namespace VK_Parser
                 lbLoginError.Visibility = Visibility.Visible;
                 lbLoginError.Content = AuthResponse["error"].ToString();
             }
-            /*the others occasions*/
+            /*the other occasions*/
             else
             {
                 MessageBox.Show(AuthResponse.ToString());
