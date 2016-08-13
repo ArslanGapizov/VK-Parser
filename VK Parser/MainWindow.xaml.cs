@@ -25,7 +25,7 @@ namespace VK_Parser
         CancellationTokenSource _cts;
         public string CaptchaSid { get; set; }
         /*Fields for response users json*/
-        private string _searchFields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation";
+        private string _searchFields = "uid,first_name,last_name,sex,bdate,can_write_private_message,relation,country,city,contacts,last_seen,relation,connections";
         /*List of founded users*/
         private List<User> _usersData;
         public List<User> UsersData
@@ -40,6 +40,48 @@ namespace VK_Parser
             }
         }
 
+        public string CountryID
+        {
+            get
+            {
+                if (checkCountry.IsChecked == true)
+                {
+                    if (rbFromList.IsChecked == true)
+                    {
+                        return cbCountry.SelectedValue.ToString();
+                    }
+                    else
+                    {
+                        return textCountryId.Text.ToString();
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public string CityID
+        {
+            get
+            {
+                if (checkCity.IsChecked == true)
+                {
+                    if (rbFromList.IsChecked == true)
+                    {
+                        return cbCity.SelectedValue.ToString();
+                    }
+                    else
+                    {
+                        return textCityId.Text.ToString();
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -282,8 +324,8 @@ namespace VK_Parser
         {
             /*parse JSON string in JSON Object, responseUsers has link on this object*/
             dynamic responseUsers = JObject.Parse(await API.users.search(
-                (checkCountry.IsChecked ?? false) ? cbCountry.SelectedValue.ToString() : null,
-                (checkCity.IsChecked ?? false) && (checkCountry.IsChecked ?? false) ? cbCity.SelectedValue.ToString() : null,
+                CountryID,
+                CityID,
                 (checkUniversity.IsChecked == true && cbUniversity.SelectedItem != null) ? cbUniversity.SelectedValue.ToString() : null,
                 cbSex.SelectedValue.ToString(),
                 checkBRelation.IsChecked == true ? cbRelationStatus.SelectedValue.ToString() : null,
@@ -292,27 +334,7 @@ namespace VK_Parser
                 date,
                 group_id
                 ));
-
-            /*if country, city or realation are known, we will write it in user`s properties, because sometimes it`s hidden*/
-            string countryFromCB = null;
-            string cityFromCB = null;
-            string realationFromCB = null;
-            /*of country is known*/
-            if (checkCountry.IsChecked ?? false)
-            {
-                countryFromCB = ((KeyValuePair<string, string>)cbCountry.SelectedItem).Value;
-            }
-            /*if city is known*/
-            if (checkCity.IsChecked ?? false)
-            {
-                cityFromCB = ((KeyValuePair<string, string>)cbCity.SelectedItem).Value;
-            }
-            /*if relation is known*/
-            if (checkBRelation.IsChecked ?? false)
-            {
-                realationFromCB = cbRelationStatus.SelectedValue.ToString();
-            }
-
+            
 
             object lockMe = new object();
             /*add users from query to list*/
@@ -328,16 +350,18 @@ namespace VK_Parser
                         Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
                         BDate = date.ToShortDateString(),
                         /*if country is known write it from comboBox, otherwise from JSON*/
-                        Country = countryFromCB != null ? countryFromCB : (item["country"] != null ? item.country.title : null),
+                        Country = item["country"] != null ? item.country.title : null,
                         /*if city is known write it from comboBox, otherwise from JSON*/
-                        City = cityFromCB != null ? cityFromCB : (item["city"] != null ? item.city.title : null),
+                        City = item["city"] != null ? item.city.title : null,
                         PrivateMessage = item.can_write_private_message,
                         MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                        Skype = item["skype"] != null ? item.skype : null,
+                        Instagram = item["instagram"] != null ? item.instagram : null,
                         HomePhone = item["home_phone"] != null ? item.home_phone : null,
                         /*convert unix format to datetime*/
                         Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
                         /*if relation is known write it from comboBox, otherwise from JSON*/
-                        Relation = realationFromCB != null ? realationFromCB : (item.relation != null ? item.relation : null),
+                        Relation = item.relation != null ? item.relation : null,
                         /*transform partner id to link*/
                         Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
                     });

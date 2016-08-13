@@ -27,6 +27,10 @@ namespace VK_Parser
         public string PrivateMessage { get; set; }
         
         public string MobilePhone { get; set; }
+
+        public string Skype { get; set; }
+
+        public string Instagram { get; set; }
         
         public string HomePhone { get; set; }
         

@@ -59,12 +59,14 @@ namespace VK_Parser
                             string.Format("\"{0}\"", user.City),
                             string.Format("\"{0}\"", user.PrivateMessage),
                             string.Format("\"{0}\"", user.MobilePhone),
+                            string.Format("\"{0}\"", user.Skype),
+                            string.Format("\"{0}\"", user.Instagram),
                             string.Format("\"{0}\"", user.HomePhone),
                             string.Format("\"{0}\"", user.Time.ToString("yyyy-MM-dd HH:mm:ss")),
                             string.Format("\"{0}\"", user.Relation),
                             string.Format("\"{0}\"", user.Partner)
                             };
-                            csv.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}", row));
+                            csv.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}", row));
                         }
                     }
                 });
