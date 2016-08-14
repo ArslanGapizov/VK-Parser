@@ -1,0 +1,17 @@
+E:\develop\VK Parser\VK Parser\bin\Debug\VK Parser.exe.config
+E:\Develop\VK Parser\VK Parser\bin\Debug\VK Parser.exe
+E:\Develop\VK Parser\VK Parser\bin\Debug\VK Parser.pdb
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser.csprojResolveAssemblyReference.cache
+E:\Develop\VK Parser\VK Parser\obj\Debug\MainWindow.g.cs
+E:\Develop\VK Parser\VK Parser\obj\Debug\App.g.cs
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser_MarkupCompile.cache
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser_MarkupCompile.lref
+E:\Develop\VK Parser\VK Parser\obj\Debug\MainWindow.baml
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser.g.resources
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK_Parser.Properties.Resources.resources
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser.csproj.GenerateResource.Cache
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser.exe
+E:\Develop\VK Parser\VK Parser\obj\Debug\VK Parser.pdb
+E:\Develop\VK Parser\VK Parser\bin\Debug\Newtonsoft.Json.dll
+E:\Develop\VK Parser\VK Parser\bin\Debug\Newtonsoft.Json.xml
+E:\Develop\VK Parser\VK Parser\obj\Debug\GeneratedInternalTypeHelper.g.cs
