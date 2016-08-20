@@ -336,6 +336,16 @@ namespace VK_Parser
             /*add users from query to list*/
             foreach (var item in responseUsers.response.items)
             {
+                /*Check if phone number is valid, if not, skip user*/
+                if (CheckPhoneNumber.IsChecked == true)
+                {
+                    string phoneNumber = item["mobile_phone"] != null ? item.mobile_phone : null;
+                    if (phoneNumber == null || !(ExpMethods.ValidPhoneNumber(phoneNumber)))
+                    {
+                        continue;
+                    }
+                }
+
                 UsersData.Add(new User
                 {
                     Id = ExpMethods.UrlFromID(item.id.ToString()),/*transform user id to link*/

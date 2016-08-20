@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
@@ -87,6 +88,16 @@ namespace VK_Parser
 
 
             return result.ToArray();
+        }
+        /*checks if phone number is valid*/
+        public static bool ValidPhoneNumber(string phone)
+        {
+            if (phone != null)
+            {
+                if (Regex.Match(phone, @"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$").Success && phone.Length > 9)
+                    return true;
+            }
+            return false;
         }
     }
 }
