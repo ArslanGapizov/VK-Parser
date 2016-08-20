@@ -93,8 +93,7 @@ namespace VK_Parser
             /*Change interface after click*/
             LoginInterfaceChanges();
             /*Get Response*/
-            JObject AuthResponse = new JObject();
-            AuthResponse = await API.Authorize(textLogin.Text, textPassword.Password, CaptchaSid, textCaptcha.Text);
+            dynamic AuthResponse = await API.Authorize(textLogin.Text, textPassword.Password, CaptchaSid, textCaptcha.Text);
 
             lbLoginError.Visibility = Visibility.Collapsed;
             lbLoginError.Content = "";
@@ -102,17 +101,15 @@ namespace VK_Parser
             textCaptcha.Visibility = Visibility.Collapsed;
             textCaptcha.Text = "";
             CaptchaSid = null;
-
-            JToken token;
             /*If response contains access token*/
-            if (AuthResponse.TryGetValue("access_token", out token))
+            if (AuthResponse["access_token"] != null)
             {
                 API.AccessToken = AuthResponse["access_token"].ToString();
                 LoginSuccessed();
                 return;
             }
             /*If error was occured because it needs captcha*/
-            if (AuthResponse.TryGetValue("error", out token) && AuthResponse["error"].ToString() == "need_captcha")
+            if (AuthResponse["error"] != null && AuthResponse["error"].ToString() == "need_captcha")
             {
                 /*save captchasid in propery, for use later*/
                 CaptchaSid = AuthResponse["captcha_sid"].ToString();
@@ -133,7 +130,7 @@ namespace VK_Parser
                 textCaptcha.Visibility = Visibility.Visible;
             }
             /*show error if login or password invalid*/
-            else if (AuthResponse.TryGetValue("error", out token) && AuthResponse["error"].ToString() == "invalid_client")
+            else if (AuthResponse["error"] != null && AuthResponse["error"].ToString() == "invalid_client")
             {
                 lbLoginError.Visibility = Visibility.Visible;
                 lbLoginError.Content = AuthResponse["error"].ToString();

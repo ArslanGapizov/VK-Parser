@@ -57,7 +57,6 @@ namespace VK_Parser
                 return false;
             }
         }
-
         /*returns array of group`s ids from it`s urls*/
         public static async Task<string[]> GroupUrlToId(string[] urls)
         {
