@@ -260,7 +260,7 @@ namespace VK_Parser
             progrBar.Value = 0;
             /*set porgressBar`s maximum rely on qty days in search`s options*/
             progrBar.Maximum = (DateEnd.DisplayDate.Subtract(DateStart.DisplayDate).Days + 1);
-            
+
             try
             {
                 /*general search if checkBox inGroups unchecked*/
@@ -334,39 +334,35 @@ namespace VK_Parser
                 date,
                 group_id
                 );
-            
 
-            object lockMe = new object();
+
             /*add users from query to list*/
-            Parallel.ForEach((IEnumerable<dynamic>)responseUsers.response.items, item =>
+            foreach (var item in responseUsers.response.items)
             {
-                lock (lockMe)
+                UsersData.Add(new User
                 {
-                    UsersData.Add(new User
-                    {
-                        Id = ExpMethods.UrlFromID(item.id.ToString()),/*transform user id to link*/
-                        FirstName = item.first_name,
-                        LastName = item.last_name,
-                        Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
-                        BDate = date.ToShortDateString(),
-                        /*if country is known write it from comboBox, otherwise from JSON*/
-                        Country = item["country"] != null ? item.country.title : null,
-                        /*if city is known write it from comboBox, otherwise from JSON*/
-                        City = item["city"] != null ? item.city.title : null,
-                        PrivateMessage = item.can_write_private_message,
-                        MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
-                        Skype = item["skype"] != null ? item.skype : null,
-                        Instagram = item["instagram"] != null ? item.instagram : null,
-                        HomePhone = item["home_phone"] != null ? item.home_phone : null,
-                        /*convert unix format to datetime*/
-                        Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
-                        /*if relation is known write it from comboBox, otherwise from JSON*/
-                        Relation = item.relation != null ? item.relation : null,
-                        /*transform partner id to link*/
-                        Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
-                    });
-                }
-            });
+                    Id = ExpMethods.UrlFromID(item.id.ToString()),/*transform user id to link*/
+                    FirstName = item.first_name,
+                    LastName = item.last_name,
+                    Sex = ExpMethods.SexFromNumber(item.sex.ToString()),
+                    BDate = date.ToShortDateString(),
+                    /*if country is known write it from comboBox, otherwise from JSON*/
+                    Country = item["country"] != null ? item.country.title : null,
+                    /*if city is known write it from comboBox, otherwise from JSON*/
+                    City = item["city"] != null ? item.city.title : null,
+                    PrivateMessage = item.can_write_private_message,
+                    MobilePhone = item["mobile_phone"] != null ? item.mobile_phone : null,
+                    Skype = item["skype"] != null ? item.skype : null,
+                    Instagram = item["instagram"] != null ? item.instagram : null,
+                    HomePhone = item["home_phone"] != null ? item.home_phone : null,
+                    /*convert unix format to datetime*/
+                    Time = item["last_seen"] != null ? ExpMethods.UnixTimeToDateTime(item.last_seen.time.ToString()) : null,
+                    /*if relation is known write it from comboBox, otherwise from JSON*/
+                    Relation = item.relation != null ? item.relation : null,
+                    /*transform partner id to link*/
+                    Partner = item["relation_partner"] != null ? ExpMethods.UrlFromID(item.relation_partner.id.ToString()) : null
+                });
+            }
             /*refresh datagrid after adding users*/
             dgUsers.Items.Refresh();
         }
@@ -403,11 +399,12 @@ namespace VK_Parser
 
             /*dictionary for combobox source, contains ids and universties` names*/
             Dictionary<string, string> universities = new Dictionary<string, string>();
-            object lockMe = new object();
             try
             {
-                Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
-                    item => { lock (lockMe) { universities.Add(item.id.ToString(), item.title.ToString()); } });
+                foreach (var item in countriesResponse.response.items)
+                {
+                    universities.Add(item.id.ToString(), item.title.ToString());
+                }
 
                 cbUniversity.ItemsSource = universities;
                 cbUniversity.DisplayMemberPath = "Value";

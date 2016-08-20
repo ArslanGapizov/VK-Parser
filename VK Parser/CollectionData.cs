@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace VK_Parser
 {
@@ -14,9 +13,10 @@ namespace VK_Parser
         {
             dynamic countriesResponse = await API.database.getCountries("1", null, null, "1000");
             Dictionary<string, string> countries = new Dictionary<string, string>();
-            object lockMe = new object();
-            Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
-                item => { lock (lockMe) { countries.Add(item.id.ToString(), item.title.ToString()); } });
+            foreach (var item in countriesResponse.response.items)
+            {
+                countries.Add(item.id.ToString(), item.title.ToString());
+            }
 
             return countries;
         }
@@ -25,8 +25,10 @@ namespace VK_Parser
             dynamic citiesResponse = await API.database.getCites(countryID, null, null, "0", null, "1000");
             Dictionary<string, string> cities = new Dictionary<string, string>();
             object lockMe = new object();
-            Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items,
-                item => { lock (lockMe) { cities.Add(item.id.ToString(), item.title.ToString()); } });
+            foreach (var item in citiesResponse.response.items)
+            {
+                cities.Add(item.id.ToString(), item.title.ToString());
+            }
 
             return cities;
         }
