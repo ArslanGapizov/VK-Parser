@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace VK_Parser
 {
@@ -33,7 +34,7 @@ namespace VK_Parser
         public static string Version { get { return "5.53"; } }
         public static string AccessToken { get; set; }
 
-        public static async Task<string> RunAsync(string method, Dictionary<string, string> pars)
+        private static async Task<string> RunAsync(string method, Dictionary<string, string> pars)
         {
             IEnumerable<KeyValuePair<string, string>> source = pars.Where((f => f.Value != null));
             pars = source.ToDictionary(x => x.Key, x => x.Value);
@@ -52,13 +53,13 @@ namespace VK_Parser
             return await (await GetAsync(result)).Content.ReadAsStringAsync();
         }
 
-        public static async Task<string> Authorize(string login, string password, string captcha_sid, string captcha_key)
+        public static async Task<JObject> Authorize(string login, string password, string captcha_sid, string captcha_key)
         {
             string requestUri = string.Format("https://oauth.vk.com/token?grant_type=password&client_id={0}&client_secret={1}&username={2}&password={3}&v={4}&2fa_supported=1", ClientId, ClientSecret, login, password, Version);
             if (captcha_key != null)
                 requestUri += string.Format("&captcha_sid={0}&captcha_key={1}", new object[2] { (object)captcha_sid, (object)captcha_key });
 
-            return await (await GetAsync(requestUri)).Content.ReadAsStringAsync();
+            return JObject.Parse(await (await GetAsync(requestUri)).Content.ReadAsStringAsync());
         }
 
         public static async Task<HttpResponseMessage> GetAsync(string requestUri)
@@ -76,29 +77,29 @@ namespace VK_Parser
 
         public static class database
         {
-            public static async Task<string> getCountries(string need_all, string code, string offset, string count)
+            public static async Task<JObject> getCountries(string need_all, string code, string offset, string count)
             {
-                return await RunAsync("database.getCountries", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("database.getCountries", new Dictionary<string, string>
                 {
                     { "need_all", need_all },
                     { "code", code },
                     { "offset", offset },
                     { "count", count }
-                });
+                }));
             }
-            public static async Task<string> getRegions(string country_id, string q, string offset, string count)
+            public static async Task<JObject> getRegions(string country_id, string q, string offset, string count)
             {
-                return await RunAsync("database.getRegions", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("database.getRegions", new Dictionary<string, string>
                 {
                     { "country_id", country_id },
                     { "q", q },
                     { "offset", offset },
                     { "count", count }
-                });
+                }));
             }
-            public static async Task<string> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
+            public static async Task<JObject> getCites(string country_id, string region_id, string q, string need_all, string offset, string count)
             {
-                return await RunAsync("database.getCities", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("database.getCities", new Dictionary<string, string>
                 {
                     { "country_id", country_id },
                     { "region_id", region_id },
@@ -106,26 +107,26 @@ namespace VK_Parser
                     { "need_all", need_all },
                     { "offset", offset },
                     { "count", count }
-                });
+                }));
             }
-            public static async Task<string> getUniversities(string q, string country_id, string city_id, string offset, string count)
+            public static async Task<JObject> getUniversities(string q, string country_id, string city_id, string offset, string count)
             {
-                return await RunAsync("database.getUniversities", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("database.getUniversities", new Dictionary<string, string>
                 {
                     { "q", q },
                     { "country_id", country_id },
                     { "city_id", city_id },
                     { "offset", offset },
                     { "count", count }
-                });
+                }));
             }
         }
 
         public static class users
         {
-            public static async Task<string> search(string country, string city, string university, string sex, string status, string count, string fields, DateTime date, string group_id)
+            public static async Task<JObject> search(string country, string city, string university, string sex, string status, string count, string fields, DateTime date, string group_id)
             {
-                return await RunAsync("users.search", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("users.search", new Dictionary<string, string>
                 {
                     { "country", country },
                     { "city", city },
@@ -138,19 +139,19 @@ namespace VK_Parser
                     { "birth_month", date.Month.ToString() },
                     { "birth_year", date.Year.ToString() },
                     { "group_id",  group_id}
-                });
+                }));
             }
         }
 
         public static class groups
         {
-            public static async Task<string> getById(string group_ids, string group_id)
+            public static async Task<JObject> getById(string group_ids, string group_id)
             {
-                return await RunAsync("groups.getById", new Dictionary<string, string>
+                return JObject.Parse(await RunAsync("groups.getById", new Dictionary<string, string>
                 {
                     { "group_ids", group_ids },
                     { "group_id", group_id }
-                });
+                }));
             }
         }
     }

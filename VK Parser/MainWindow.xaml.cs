@@ -94,7 +94,7 @@ namespace VK_Parser
             LoginInterfaceChanges();
             /*Get Response*/
             JObject AuthResponse = new JObject();
-            AuthResponse = JObject.Parse(await API.Authorize(textLogin.Text, textPassword.Password, CaptchaSid, textCaptcha.Text));
+            AuthResponse = await API.Authorize(textLogin.Text, textPassword.Password, CaptchaSid, textCaptcha.Text);
 
             lbLoginError.Visibility = Visibility.Collapsed;
             lbLoginError.Content = "";
@@ -323,7 +323,7 @@ namespace VK_Parser
         private async Task SearchUsers(DateTime date, string group_id)
         {
             /*parse JSON string in JSON Object, responseUsers has link on this object*/
-            dynamic responseUsers = JObject.Parse(await API.users.search(
+            dynamic responseUsers = await API.users.search(
                 CountryID,
                 CityID,
                 (checkUniversity.IsChecked == true && cbUniversity.SelectedItem != null) ? cbUniversity.SelectedValue.ToString() : null,
@@ -333,7 +333,7 @@ namespace VK_Parser
                 _searchFields,
                 date,
                 group_id
-                ));
+                );
             
 
             object lockMe = new object();
@@ -399,7 +399,7 @@ namespace VK_Parser
             string heldText = cbUniversity.Text;
 
             /*query with name of university, city id, country id if was setted*/
-            dynamic countriesResponse = JObject.Parse(await API.database.getUniversities(heldText, checkCountry.IsChecked == true ? cbCountry.SelectedValue.ToString() : null, checkCity.IsChecked == true ? cbCity.SelectedValue.ToString() : null, null, "10000"));
+            dynamic countriesResponse = await API.database.getUniversities(heldText, checkCountry.IsChecked == true ? cbCountry.SelectedValue.ToString() : null, checkCity.IsChecked == true ? cbCity.SelectedValue.ToString() : null, null, "10000");
 
             /*dictionary for combobox source, contains ids and universties` names*/
             Dictionary<string, string> universities = new Dictionary<string, string>();

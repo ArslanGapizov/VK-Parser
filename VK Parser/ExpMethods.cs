@@ -72,7 +72,7 @@ namespace VK_Parser
             {
                 foreach (var id in group_ids)
                 {
-                    JObject group = JObject.Parse(await API.groups.getById(id, null));
+                    JObject group = await API.groups.getById(id, null);
                     if (group["response"] != null)
                     {
                         string respID = (((JArray)group["response"]).Children<JObject>().FirstOrDefault(item => item["screen_name"] != null && item["screen_name"].ToString() == id))["id"].ToString();

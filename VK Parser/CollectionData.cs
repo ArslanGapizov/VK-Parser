@@ -12,7 +12,7 @@ namespace VK_Parser
     {
         public static async Task<Dictionary<string, string>> CollectionContries()
         {
-            dynamic countriesResponse = JObject.Parse(await API.database.getCountries("1", null, null, "1000"));
+            dynamic countriesResponse = await API.database.getCountries("1", null, null, "1000");
             Dictionary<string, string> countries = new Dictionary<string, string>();
             object lockMe = new object();
             Parallel.ForEach((IEnumerable<dynamic>)countriesResponse.response.items,
@@ -22,7 +22,7 @@ namespace VK_Parser
         }
         public static async Task<Dictionary<string, string>> CollectionCities(string countryID)
         {
-            dynamic citiesResponse = JObject.Parse(await API.database.getCites(countryID, null, null, "0", null, "1000"));
+            dynamic citiesResponse = await API.database.getCites(countryID, null, null, "0", null, "1000");
             Dictionary<string, string> cities = new Dictionary<string, string>();
             object lockMe = new object();
             Parallel.ForEach((IEnumerable<dynamic>)citiesResponse.response.items,
